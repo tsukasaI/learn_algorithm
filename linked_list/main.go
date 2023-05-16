@@ -1,14 +1,29 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-type node struct {
-	data int
-	next *node
-}
-type linkedList struct {
-	head *node
-}
+type (
+	node struct {
+		data int
+		next *node
+	}
+	linkedList struct {
+		head *node
+	}
+)
+
+type (
+	doublyNode struct {
+		data int
+		next *doublyNode
+		prev *doublyNode
+	}
+	doublyLinkedList struct {
+		head *doublyNode
+	}
+)
 
 func (l *linkedList) append(data int) {
 	newNode := node{data: data}
@@ -114,7 +129,128 @@ func (l *linkedList) reverseEven() {
 	l.head = _reverseEven(l.head, nil)
 }
 
+func (d *doublyLinkedList) append(data int) {
+	newNode := doublyNode{data: data}
+	if d.head == nil {
+		d.head = &newNode
+		return
+	}
+	currentNode := d.head
+	for currentNode.next != nil {
+		currentNode = currentNode.next
+	}
+	currentNode.next = &newNode
+	newNode.prev = currentNode
+}
+
+func (d *doublyLinkedList) insert(data int) {
+	newNode := doublyNode{data: data}
+	if d.head == nil {
+		d.head = &newNode
+		return
+	}
+
+	d.head.prev = &newNode
+	newNode.next = d.head
+	d.head = &newNode
+
+}
+
+func (d *doublyLinkedList) print() {
+	currentNode := d.head
+	for currentNode != nil {
+		fmt.Println(currentNode.data)
+		currentNode = currentNode.next
+	}
+}
+
+func (d *doublyLinkedList) remove(data int) {
+	currentNode := d.head
+	if currentNode != nil && currentNode.data == data {
+		if currentNode.next == nil {
+			currentNode = nil
+			d.head = nil
+			return
+		} else {
+			nextNode := currentNode.next
+			nextNode.prev = nil
+			d.head = nextNode
+			return
+		}
+	}
+	for currentNode != nil && currentNode.data != data {
+		currentNode = currentNode.next
+
+		if currentNode == nil {
+			return
+		}
+
+		if currentNode.next == nil {
+			prev := currentNode.prev
+			prev.next = nil
+			currentNode = nil
+			return
+		} else {
+			nextNode := currentNode.next
+			prevNode := currentNode.prev
+			prevNode.next = nextNode
+			nextNode.prev = prevNode
+			currentNode = nil
+			return
+		}
+	}
+}
+
+func (d *doublyLinkedList) reverseIterative() {
+	var previousNode *doublyNode
+	currentNode := d.head
+
+	for currentNode != nil {
+		previousNode = currentNode.prev
+		currentNode.prev, currentNode.next = currentNode.next, currentNode.prev
+		currentNode = currentNode.prev
+
+	}
+
+	if previousNode != nil {
+		d.head = previousNode.prev
+	}
+}
+
+func (d *doublyLinkedList) reverseRecursive() {
+	var _reverseRecursive func(currentNode *doublyNode) *doublyNode
+	_reverseRecursive = func(currentNode *doublyNode) *doublyNode {
+		if currentNode == nil {
+			return nil
+		}
+
+		currentNode.next, currentNode.prev = currentNode.prev, currentNode.next
+
+		if currentNode.prev == nil {
+			return currentNode
+		}
+
+		return _reverseRecursive(currentNode.prev)
+	}
+	d.head = _reverseRecursive(d.head)
+}
+
+func (d *doublyLinkedList) bubbleSort() {
+	if d.head == nil {
+		return
+	}
+
+	currentNode := d.head
+	for currentNode.next != nil {
+		if currentNode.data > currentNode.next.data {
+			currentNode.data, currentNode.next.data = currentNode.next.data, currentNode.data
+		}
+		currentNode = currentNode.next
+	}
+}
+
 func main() {
+	fmt.Println("----linkedlist-----")
 	l := linkedList{}
 	l.append(1)
 	l.append(2)
@@ -146,4 +282,22 @@ func main() {
 	l.reverseEven()
 	fmt.Println("-----rev even")
 	l.print()
+	fmt.Println("----doublyLinkedlist-----")
+	d := doublyLinkedList{}
+	d.append(1)
+	d.append(2)
+	d.append(3)
+	d.insert(0)
+	d.print()
+	fmt.Println("reversed ite")
+	d.reverseIterative()
+	d.print()
+	fmt.Println("reversed rec")
+	d.reverseRecursive()
+	d.print()
+
+	d.insert(5)
+	fmt.Println("bubbleSort")
+	d.bubbleSort()
+	d.print()
 }
