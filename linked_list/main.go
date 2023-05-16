@@ -297,6 +297,7 @@ func main() {
 	d.print()
 
 	d.insert(5)
+	d.insert(8)
 	fmt.Println("bubbleSort")
 	d.bubbleSort()
 	d.print()
