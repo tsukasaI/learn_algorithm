@@ -242,8 +242,12 @@ func (d *doublyLinkedList) bubbleSort() {
 
 	currentNode := d.head
 	for currentNode.next != nil {
-		if currentNode.data > currentNode.next.data {
-			currentNode.data, currentNode.next.data = currentNode.next.data, currentNode.data
+		nextNode := currentNode.next
+		for nextNode != nil {
+			if currentNode.data > nextNode.data {
+				currentNode.data, nextNode.data = nextNode.data, currentNode.data
+			}
+			nextNode = nextNode.next
 		}
 		currentNode = currentNode.next
 	}
